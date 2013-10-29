@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>promise test</title>
+</head>
+<body>
+    <script src="./promise.js"></script>
+    <script>
+        var d1 = new Deferred();
+        var d2 = new Deferred();
+
+        var w = when(d1, d2).then(function(e){console.log(e);console.assert(e[1], 2);});
+
+        d1.resolve(1); d2.resolve(2);
+    </script>
+</body>
+</html>
