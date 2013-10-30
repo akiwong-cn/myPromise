@@ -5,41 +5,49 @@
         this._callback = {};
     }
 
-    Deferred.prototype.resolve = function(value) {
-        this.result = value;
+    var slice = [].slice;
+
+    Deferred.prototype.resolve = function() {
         var res, 
-            callback = this._callback["done"];
+            callback = this._callback["done"],
+            args = slice.call(arguments);
+        this.result = args;
         if (this.state !== "resolving") {
             return this;
         }
         try {
             this.state = "resolved";
-            callback && this._then(callback(value));
+            callback && this._then(callback.apply(this, args));
         } catch(e) {
-            this._then(e)
+            this._then(e, true);
         }
         this._callback = {};
         return this;
     };
 
-    Deferred.prototype._then = function(value){
+    Deferred.prototype._then = function(value, rejected) {
         var then = this._next;
         if(then) {
-            if(this.state === "resolved") {
+            if(!rejected) {
                 then.resolve(value);
-            } else if(this.state) {
+            } else {
                 then.reject(value);
             }
         }
         return this;
     };
 
+    Deferred.prototype._clear = function() {
+        this._callback = {};
+        this.result = undefined;
+    };
+
     Deferred.prototype.reject = function(reason) {
         this.state = "rejected";
         var callback = this._callback["fail"];
         callback && callback(reason);
-        this._then(reason)._callback = {};
-    }
+        this._then(reason, true)._clear();
+    };
 
     Deferred.prototype.then = function(done, fail, process) {
         this._callback["done"] = done;
@@ -58,8 +66,6 @@
         }
     };
 
-    var slice = [].slice;
-
     function when() {
         var args = slice.call(arguments, 0),
             deferred = new Deferred(),
@@ -74,7 +80,7 @@
                     return function(value) {
                         resolvedValues[index] = value;
                         if(!(--remain)) {
-                            deferred.resolve(resolvedValues);
+                            deferred.resolve.apply(deferred, resolvedValues);
                         }
                     };
                 }
