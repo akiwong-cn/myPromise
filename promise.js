@@ -36,14 +36,15 @@
         var state = this.state,
             callbacks = this._callback[state],
             args = this.result,
-            fn;
-        if (state === "resolving") {
+            memory;
+        if (state === "resolved") {
             for (var i = 0, length = callbacks.length; i < length; i++) {
-                args = callbacks.pop().call(this, args) || args;   
+                memory = callbacks.shift().apply(this, args);
+                memory && (args = [memory]);
             }
         } else if (state === "rejected") {
             for (var i = 0, length = callbacks.length; i < length; i++) {
-                callbacks.pop().call(this, args);   
+                callbacks.shift().apply(this, args);   
             }
         }
         return this;
@@ -61,7 +62,7 @@
 
     Deferred.prototype.reject = function(reason) {
         this.state = "rejected";
-        this.result = reason;
+        this.result = [reason];
         this._fire()
             ._clear();
         return this;
@@ -100,8 +101,9 @@
                             deferred.resolve.apply(deferred, resolvedValues);
                         }
                     };
-                }
-            )(i), deferred.reject);
+                })(i),
+                deferred.reject
+            );
         };
         return deferred.promise();
     }
