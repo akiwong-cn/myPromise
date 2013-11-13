@@ -1,4 +1,4 @@
-(function(exports)
+(function(exports){
     function Queue () {
         this._callback = [];
         this.runned = false;
