@@ -6,19 +6,20 @@
 </head>
 <body>
     <script src="./promise.js"></script>
+    <script src="./queue.js"></script>
     <script>
         console.group("deferred test");
         var d1 = new Deferred();
         var d2 = new Deferred();
-        d1.then(function(a){console.assert(a===1, "resolve 1 not pass");return a + 1;})
-          .then(function(a){console.assert(a===2, "resolve 2 not pass");return a + 1;})
-          .then(function(a){console.assert(a===3, "resolve 3 not pass");return a + 1;})
-          .then(function(a){console.assert(a===4, "resolve 4 not pass");return a + 1;});
+        d1.then(function(a){console.log(a);console.assert(a===1, "resolve 1 not pass");return a + 1;})
+          .then(function(a){console.log(a);console.assert(a===2, "resolve 2 not pass");return a + 1;})
+          .then(function(a){console.log(a);console.assert(a===3, "resolve 3 not pass");return a + 1;})
+          .then(function(a){console.log(a);console.assert(a===4, "resolve 4 not pass");return a + 1;});
 
-        d2.then(null, function(a){console.assert(a===2, "reject 1 not pass");return a + 1;})
-          .then(null, function(a){console.assert(a===2, "reject 2 not pass");return a + 1;})
-          .then(null, function(a){console.assert(a===2, "reject 3 not pass");return a + 1;})
-          .then(null, function(a){console.assert(a===2, "reject 4 not pass");return a + 1;})
+        d2.then(null, function(a){console.log(a);console.assert(a===2, "reject 1 not pass");return a + 1;})
+          .then(null, function(a){console.log(a);console.assert(a===2, "reject 2 not pass");return a + 1;})
+          .then(null, function(a){console.log(a);console.assert(a===2, "reject 3 not pass");return a + 1;})
+          .then(null, function(a){console.log(a);console.assert(a===2, "reject 4 not pass");return a + 1;})
           .then(function(){console.assert(false, "reject show not call resolve")});
         
         d1.resolve(1);
@@ -29,10 +30,21 @@
         var d1 = new Deferred();
         var d2 = new Deferred();
 
-        var w = when(d1, d2).then(function(e1, e2){console.assert((e1===1 && e2===2), "when arguments error");});
+        var w = when(d1, d2).then(function(e1, e2){console.log(e1,e2);console.assert((e1===1 && e2===2), "when arguments error");});
 
         d1.resolve(1); d2.resolve(2);
         console.groupEnd("when test");
+    </script>
+    <script>
+      console.group("queue test");
+      var q1 = new Queue();
+      q1.push(function(a, next){console.log("1 run");console.assert(a==1, "1 run");next();}, 1);
+      q1.push(function(a, next){console.log("2 run");console.assert(a==2, "2 run");next();}, 2);
+      q1.push(function(a, next){console.log("3 run");console.assert(a==3, "3 run");next();}, 3);
+      q1.push(function(a, next){console.log("4 run");console.assert(a==4, "4 run");next();}, 4);
+      q1.run();
+      console.assert(q1.runned);
+      console.groupEnd("queue test");
     </script>
 </body>
 </html>
