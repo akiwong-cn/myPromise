@@ -38,12 +38,12 @@
     <script>
       console.group("queue test");
       var q1 = new Queue();
-      q1.push(function(a, next){console.log("1 run");console.assert(a==1, "1 run");next();}, 1);
-      q1.push(function(a, next){console.log("2 run");console.assert(a==2, "2 run");next();}, 2);
+      q1.push(function(a, next){console.log("1 run");console.assert(a==1);next(2);}, 1);
+      q1.push(function(a, b, next){console.log("2 run test arguments inject by previous");console.assert(a==2&&b==2);next();}, 2);
       q1.push(function(a, next){console.log("3 run");console.assert(a==3, "3 run");next();}, 3);
-      q1.push(function(a, next){console.log("4 run");console.assert(a==4, "4 run");next();}, 4);
+      q1.push(function(a, b, next){console.log("4 run test two arguments");console.assert(a==4&&b==5);}, 4, 5);
       q1.run();
-      console.assert(q1.runned);
+      console.log("last function");console.assert(q1.runned);
       console.groupEnd("queue test");
     </script>
 </body>
