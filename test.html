@@ -8,9 +8,9 @@
     <script src="./promise.js"></script>
     <script src="./queue.js"></script>
     <script>
+        console.group("deferred test");
         var d1 = new Deferred();
         var d2 = new Deferred();
-<<<<<<< HEAD
         d1.then(function(a){console.log(a);console.assert(a===1, "resolve 1 not pass");return a + 1;})
           .then(function(a){console.log(a);console.assert(a===2, "resolve 2 not pass");return a + 1;})
           .then(function(a){console.log(a);console.assert(a===3, "resolve 3 not pass");return a + 1;})
@@ -31,12 +31,9 @@
         var d2 = new Deferred();
 
         var w = when(d1, d2).then(function(e1, e2){console.log(e1,e2);console.assert((e1===1 && e2===2), "when arguments error");});
-=======
-
-        var w = when(d1, d2).then(function(e){console.log(e);console.assert(e[1], 2);});
->>>>>>> parent of 52b10f8... change invoke callback with apply
 
         d1.resolve(1); d2.resolve(2);
+        console.groupEnd("when test");
     </script>
     <script>
       console.group("queue test");
