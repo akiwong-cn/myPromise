@@ -9,17 +9,21 @@
         };
     }
 
-    var slice = [].slice;
-
-    Deferred.prototype.resolve = function() {
+    Deferred.prototype.resolve = function(value) {
+        this.result = value;
         var res, 
+<<<<<<< HEAD
             args = slice.call(arguments);
         this.result = args;
+=======
+            callback = this._callback["done"];
+>>>>>>> parent of 52b10f8... change invoke callback with apply
         if (this.state !== "resolving") {
             return this;
         }
         try {
             this.state = "resolved";
+<<<<<<< HEAD
             this._fire()
                 ._clear();
         } catch(e) {
@@ -27,11 +31,17 @@
             this.result = e;
             this._fire()
                 ._clear();
+=======
+            callback && this._then(callback(value));
+        } catch(e) {
+            this._then(e)
+>>>>>>> parent of 52b10f8... change invoke callback with apply
         }
 
         return this;
     };
 
+<<<<<<< HEAD
     Deferred.prototype._fire = function() {
         var state = this.state,
             callbacks = this._callback[state],
@@ -45,11 +55,21 @@
         } else if (state === "rejected") {
             for (var i = 0, length = callbacks.length; i < length; i++) {
                 callbacks.shift().apply(this, args);   
+=======
+    Deferred.prototype._then = function(value){
+        var then = this._next;
+        if(then) {
+            if(this.state === "resolved") {
+                then.resolve(value);
+            } else if(this.state) {
+                then.reject(value);
+>>>>>>> parent of 52b10f8... change invoke callback with apply
             }
         }
         return this;
     }
 
+<<<<<<< HEAD
     Deferred.prototype._clear = function() {
         this._callback = {
             "resolved": [],
@@ -67,6 +87,14 @@
             ._clear();
         return this;
     };
+=======
+    Deferred.prototype.reject = function(reason) {
+        this.state = "rejected";
+        var callback = this._callback["fail"];
+        callback && callback(reason);
+        this._then(reason)._callback = {};
+    }
+>>>>>>> parent of 52b10f8... change invoke callback with apply
 
     Deferred.prototype.then = function(done, fail, process) {
         done && this._callback["resolved"].push(done);
@@ -84,6 +112,8 @@
         }
     };
 
+    var slice = [].slice;
+
     function when() {
         var args = slice.call(arguments, 0),
             deferred = new Deferred(),
@@ -98,7 +128,7 @@
                     return function(value) {
                         resolvedValues[index] = value;
                         if(!(--remain)) {
-                            deferred.resolve.apply(deferred, resolvedValues);
+                            deferred.resolve(resolvedValues);
                         }
                     };
                 })(i),
