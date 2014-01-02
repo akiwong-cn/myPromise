@@ -1,7 +1,7 @@
 (function(exports){
     "use strict"
      function Deferred() {
-        this.state = "resolving";
+        this.state = "pendding";
         this._callback = {};
     }
 
@@ -12,7 +12,7 @@
             callback = this._callback["done"],
             args = slice.call(arguments);
         this.result = args;
-        if (this.state !== "resolving") {
+        if (this.state !== "pendding") {
             return this;
         }
         try {
