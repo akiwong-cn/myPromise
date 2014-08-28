@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>yield test</title>
+</head>
+<body>
+  <script src="yield.js"></script>
+  <script>
+    var q = new Queue();
+
+    q.push(function *(next) {
+      var start;
+      console.log("should be show at start ", (start = new Date()));
+      var a = yield 1;
+      console.log(a);
+      yield* next;
+      console.log("sholud show at last");
+    });
+
+    q.push(function *(next) {
+      console.log("show second");
+      yield* next;
+    });
+
+    q.push(function *(next) {
+      console.log("show third");
+      yield *next;
+    });
+
+    q.run();
+  </script>
+</body>
+</html>
